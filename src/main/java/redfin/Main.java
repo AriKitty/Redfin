@@ -1,7 +1,10 @@
 package redfin;
 
+import org.checkerframework.checker.units.qual.C;
+import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import redfin.pages.HomePage;
@@ -26,16 +29,19 @@ public class Main {
     private static WebDriver driver;
 
     public static void main(String[] args) {
-        driver = new ChromeDriver();
+        ChromeOptions options = new ChromeOptions();
+        options.setPageLoadTimeout(Duration.of(10, ChronoUnit.SECONDS));
+        options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
+        driver = new ChromeDriver(options);
         driver.manage().timeouts().implicitlyWait(Duration.of(5, ChronoUnit.SECONDS));
 
-        try {
+//        try {
             driver.get("https://www.redfin.com/");
             testFilteredPropertySearch(MIN_PRICE, MAX_PRICE, BEDS_START_INDEX, BEDS_END_INDEX, BATHS_INDEX);
-            System.out.println("TEST PASSED!");
-        } catch (Exception e) {
-            System.out.println("TEST FAILED!");
-        }
+//            System.out.println("TEST PASSED!");
+//        } catch (Exception e) {
+//            System.out.println("TEST FAILED!");
+//        }
 
         driver.quit();
     }
@@ -45,10 +51,6 @@ public class Main {
         // Search
         SearchPage search = new HomePage(driver).search(LOCATION);
         System.out.println("Searching " + LOCATION);
-
-        // Wait up to 10 seconds for the page to change to the search page and the map to fully load
-        new WebDriverWait(driver, Duration.of(10, ChronoUnit.SECONDS))
-                .until(ExpectedConditions.urlContains("/city/"));
 
         // Validate the correct location was searched and the page title
         assertEquals(PAGE_TITLE, driver.getTitle(),

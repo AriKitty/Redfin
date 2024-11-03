@@ -28,6 +28,10 @@ public class SearchPage {
     public SearchPage(WebDriver driver) {
         this.driver = driver;
 
+        // Wait up to 10 seconds for the page to change to the search page and the map to fully load
+        new WebDriverWait(driver, Duration.of(10, ChronoUnit.SECONDS))
+                .until(ExpectedConditions.urlContains("/city/"));
+
         // Make sure being called on the correct page
         if (!driver.getTitle().contains(PAGE_TITLE)) {
             throw new IllegalStateException("Not on the Search page! Driver's URL: " + driver.getCurrentUrl());

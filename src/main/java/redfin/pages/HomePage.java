@@ -2,6 +2,10 @@ package redfin.pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 public class HomePage {
     protected WebDriver driver;
@@ -11,6 +15,8 @@ public class HomePage {
 
     public HomePage(WebDriver driver) {
         this.driver = driver;
+
+        new WebDriverWait(driver, Duration.ofSeconds(7)).until(ExpectedConditions.elementToBeClickable(SEARCH_BUTTON));
 
         // Make sure being called on the correct page
         if (!driver.getTitle().equals(PAGE_TITLE)) {
