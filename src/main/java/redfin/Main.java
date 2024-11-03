@@ -7,6 +7,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.opentest4j.AssertionFailedError;
 import redfin.pages.HomePage;
 import redfin.pages.SearchPage;
 
@@ -35,15 +36,17 @@ public class Main {
         driver = new ChromeDriver(options);
         driver.manage().timeouts().implicitlyWait(Duration.of(5, ChronoUnit.SECONDS));
 
-//        try {
+        try {
             driver.get("https://www.redfin.com/");
             testFilteredPropertySearch(MIN_PRICE, MAX_PRICE, BEDS_START_INDEX, BEDS_END_INDEX, BATHS_INDEX);
-//            System.out.println("TEST PASSED!");
-//        } catch (Exception e) {
-//            System.out.println("TEST FAILED!");
-//        }
-
-        driver.quit();
+            System.out.println("TEST PASSED!");
+        } catch (AssertionFailedError | Exception e) {
+            System.out.println("TEST FAILED!");
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        } finally {
+            driver.quit();
+        }
     }
 
     public static void testFilteredPropertySearch(int min, int max, int bedStartIndex, int bedEndIndex,
@@ -53,10 +56,8 @@ public class Main {
         System.out.println("Searching " + LOCATION);
 
         // Validate the correct location was searched and the page title
-        assertEquals(PAGE_TITLE, driver.getTitle(),
-                "Incorrect Page Title. Expected: " + PAGE_TITLE + " Actual: " + driver.getTitle());
-        assertTrue(search.getResultsLocation().contains(LOCATION),
-                "Incorrect location. Expected: " + LOCATION + " Actual: " + search.getResultsLocation());
+        assertEquals(PAGE_TITLE, driver.getTitle(), "Incorrect Page Title.");
+        assertTrue(search.getResultsLocation().contains(LOCATION), "Incorrect location.");
 
         // Get the number of results to confirm the listings were filtered
         int allResults = Integer.parseInt(search.getNumberOfResults().split(" ")[2].replace(",", ""));
@@ -66,10 +67,8 @@ public class Main {
         search.filterResults(min, max, bedStartIndex, bedEndIndex, BathsIndex);
 
         // Validate the correct location was searched and the page title again
-        assertEquals(PAGE_TITLE, driver.getTitle(),
-                "Incorrect Page Title. Expected: " + PAGE_TITLE + " Actual: " + driver.getTitle());
-        assertTrue(search.getResultsLocation().contains(LOCATION),
-                "Incorrect location. Expected: " + LOCATION + " Actual: " + search.getResultsLocation());
+        assertEquals(PAGE_TITLE, driver.getTitle(), "Incorrect Page Title.");
+        assertTrue(search.getResultsLocation().contains(LOCATION), "Incorrect location.");
 
         // Get the number of results found and validate results were filtered
         int numOfListings = Integer.parseInt(search.getNumberOfResults().split(" ")[2]);
@@ -92,16 +91,13 @@ public class Main {
                 // Asserting the beds is a tiny more complex as the user could have searched a range or single value
                 // If selected a single value
                 if (bedEndIndex == bedStartIndex) {
-                    assertEquals(BEDS, foundBeds,
-                            "Incorrect number of beds. Beds expected: " + BEDS + " Actual: " + foundBeds);
+                    assertEquals(BEDS, foundBeds, "Incorrect number of beds.");
                 } else {
-                    assertTrue(foundBeds >= BEDS ,
-                            "Incorrect number of beds. Minimum beds expected: " + BEDS + " Actual: " + foundBeds);
+                    assertTrue(foundBeds >= BEDS , "Incorrect number of beds.");
                 }
 
                 foundBaths = Double.parseDouble(search.getBathsFromListing(i).split(" ")[0]);
-                assertTrue(foundBaths >= BATHS,
-                        "Incorrect number of baths. Baths expected: " + BATHS + " Actual: " + foundBaths);
+                assertTrue(foundBaths >= BATHS, "Incorrect number of baths.");
                 System.out.println("Listing " + i + " Validated. Price: " + price + " Beds: " + foundBeds + " Baths: " + foundBaths);
             } catch (NumberFormatException e) {
                 System.out.println("Found a plot of land!");
