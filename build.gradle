@@ -1,0 +1,22 @@
+plugins {
+    id 'java'
+}
+
+group = 'Redfin'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.26.0'
+    implementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.8.1'
+    implementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.8.1'
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
